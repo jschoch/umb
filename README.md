@@ -6,20 +6,17 @@ Umb
 
 Basic structure: 
 
+```
 umb
-
   └──apps
-  
       └──rtr
-      
       └──app1
-      
       └──app2
+```
 
+Rtr.Endpoint is what binds to our port, and it's router will directly call the modules for the other apps.  I couldn't see any advantage to using forward, perhaps someone could comment on this.
 
-
-
-commands to do this
+commands to set this up:
 
 ```sh
 mix new umb --umbrella
