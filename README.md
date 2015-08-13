@@ -14,7 +14,9 @@ umb
       └──app2
 ```
 
-Rtr.Endpoint is what binds to our port, and it's router will directly call the modules for the other apps.  I couldn't see any advantage to using forward, perhaps someone could comment on this.
+Rtr.Endpoint is what binds to our port, and it's router will directly call the modules for the other apps.  
+
+The other approach you can use is to use Phoenix.Router.forward/4 which would allow full asset management for each child app.  If your logic can be isolated from assets this is not needed.
 
 commands to set this up:
 
