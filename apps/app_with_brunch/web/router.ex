@@ -1,5 +1,5 @@
-defmodule Rtr.Router do
-  use Rtr.Web, :router
+defmodule AppWithBrunch.Router do
+  use AppWithBrunch.Web, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,26 +13,14 @@ defmodule Rtr.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", Rtr do
+  scope "/", AppWithBrunch do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
   end
-  scope "/1",App1 do
-    pipe_through :browser
-    get "/", PageController, :index
-  end
-  scope "/2",App2 do
-    pipe_through :browser
-    get "/", PageController, :index
-  end
-
-  forward "/app1", App1.Endpoint
-  forward "/app2", App2.Endpoint
-  forward "/ab", AppWithBrunch.Endpoint
 
   # Other scopes may use custom stacks.
-  # scope "/api", Rtr do
+  # scope "/api", AppWithBrunch do
   #   pipe_through :api
   # end
 end
