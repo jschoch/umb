@@ -1,3 +1,4 @@
+
 Umb
 ===
 
@@ -6,30 +7,58 @@ Umb
 
 Basic structure: 
 
+```
 umb
-  └──apps
-      └──rtr
-      └──app1
-      └──app2
-
-app1..1 and app_with_brunch have configs updated to prevent the endpoint from binding to a port (dev.exs)
-
-```elixir
-config :app1, App1.Endpoint, server: false
+  ...apps
+      ...rtr
+      ...app1
+      ...app2
 ```
 
+Rtr.Endpoint is what binds to our port, and it's router will directly call the modules for the other apps.  
 
-commands to do this
+The other approach you can use is to use Phoenix.Router.forward/4 which would allow full asset management for each child app.  If your logic can be isolated from assets this is not needed.
+
+commands to set this up:
 
 ```sh
 mix new umb --umbrella
 mix phoenix.new rtr --no-ecto
 mix phoenix.new app1 --no-ecto --no-brunch
 mix phoenix.new app2 --no-ecto --no-brunch
-mix phoenix.new app_with_brunch --no-ecto
 ```
 
-> then edit your app/config/dev.exs per above
+> then edit your apps/<app>/config/dev.exs and add this customized to your app name and endpoint: 
+
+>app1
+```elixir
+config :app1, App1.Endpoint, server: false
+```
+
+>app2
+```elixir
+config :app2, App2.Endpoint, server: false
+```
+
+Next we update our router, note we changed the scope module
+
+```elixir
+  scope "/", Rtr do
+    pipe_through :browser # Use the default browser stack
+
+    get "/", PageController, :index
+  end
+  scope "/1",App1 do
+    pipe_through :browser
+    get "/", PageController, :index
+  end
+  scope "/2",App2 do
+    pipe_through :browser
+    get "/", PageController, :index
+  end
+```
+
+The final step was to change apps/<app>/web/templates/page/index.html.eex so we can see the differences
 
 ```sh 
 mix phoenix.server
@@ -41,5 +70,10 @@ Interactive Elixir (1.0.5) - press Ctrl+C to exit (type h() ENTER for help)
 iex(1)>
 ```
 
+You can test via curl
 
-to get your assets working you need to change your layout to match your router config.  In this case we prepend "/ab" to the static_path for both app.css and app.js
+```sh
+curl localhost:4000
+curl localhost:4000/1
+curl localhost:4000/2
+```
